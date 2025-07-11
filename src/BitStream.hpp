@@ -14,6 +14,8 @@ public:
 
     std::size_t size() const;
     uint32_t get_word(std::size_t i) const;
+    uint8_t get_byte(std::size_t i) const;
+    uint8_t get_bit(std::size_t i) const;
 
     friend std::ostream& operator<<(std::ostream& os, const BitStream& bs);
 private:

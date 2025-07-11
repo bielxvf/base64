@@ -11,13 +11,13 @@ BitStream::~BitStream()
 {
     delete[] m_data;
 }
-    
+
 void BitStream::append_bit(uint8_t b)
 {
     if (b > 1) return;
 
     if (m_count == m_capacity * 8) {
-        std::size_t new_capacity = m_capacity * 2;
+        std::size_t new_capacity = (m_capacity + 1) * 2;
         uint8_t* new_data = new uint8_t[new_capacity](); 
         for (std::size_t i = 0; i < m_capacity; i++) {
             new_data[i] = m_data[i];
@@ -64,7 +64,7 @@ std::size_t BitStream::size() const
 uint32_t BitStream::get_word(std::size_t i) const
 {
     if ((i + 1) * 32 > m_count) {
-        throw std::out_of_range("BitStream index out of range");
+        throw std::out_of_range("BitStream word index out of range");
     }
 
     uint32_t result = 0;
@@ -77,6 +77,24 @@ uint32_t BitStream::get_word(std::size_t i) const
         result |= bit;
     }
     return result;
+}
+
+uint8_t BitStream::get_byte(std::size_t i) const
+{
+    if (i >= m_count / 8) {
+        throw std::out_of_range("BitStream byte index out of range");
+    }
+
+    return m_data[i];
+}
+
+uint8_t BitStream::get_bit(std::size_t i) const
+{
+    if (i >= m_count) {
+        throw std::out_of_range("BitStream bit index out of range");
+    }
+
+    return (m_data[i / 8] >> (7 - (i % 8))) & 1;
 }
 
 std::ostream& operator<<(std::ostream& os, const BitStream& bs)
