@@ -16,6 +16,3 @@ Then you can run
 ```sh
 ./nob test
 ```
-
-# TODO
-- Remove cxxopts source from lib/ and make nob download it when you build
