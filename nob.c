@@ -14,7 +14,6 @@
 
 #define LINKER_DEPS "build/BitStream.o", "build/base64.o"
 
-#define LIBS         "-I./lib/cxxopts/"
 #define INCLUDE_DIRS "include/"
 
 int main(int argc, char **argv)
@@ -23,8 +22,30 @@ int main(int argc, char **argv)
 
     if (!nob_mkdir_if_not_exists(BUILD_DIR)) return 1;
 
+
+
     if (!strcmp(argv[1], "build")) {
+        if (!nob_mkdir_if_not_exists(BUILD_DIR "lib")) return 1;
         Nob_Cmd cmd = {0};
+        nob_cmd_append(&cmd,
+                "curl",
+                "-L",
+                "-s",
+                "-o", BUILD_DIR "lib/cxxopts.tar.gz",
+                "https://github.com/jarro2783/cxxopts/archive/refs/tags/v3.3.1.tar.gz");
+        if (!nob_cmd_run_sync(cmd)) return 1;
+
+        cmd.count = 0;
+        nob_cmd_append(&cmd,
+                "tar",
+                "-x",
+                "-z",
+                "-f", BUILD_DIR "lib/cxxopts.tar.gz",
+                "-C", BUILD_DIR "lib/"); 
+        if (!nob_cmd_run_sync(cmd)) return 1;
+
+
+        cmd.count = 0;
         nob_cmd_append(&cmd,
             COMPILER, 
             STD_VERSION,
@@ -51,13 +72,14 @@ int main(int argc, char **argv)
             COMPILER, 
             STD_VERSION,
             WARNINGS, 
-            LIBS,
+            "-I" BUILD_DIR "lib/cxxopts-3.3.1/include",
             "-I" INCLUDE_DIRS,
             "-o", BUILD_DIR PROJECT_NAME, 
             LINKER_DEPS,
             CORE_DIR "main.cpp");
         if (!nob_cmd_run_sync(cmd)) return 1;
     } else if (!strcmp(argv[1], "test")) {
+        /* TODO: Automatically run all tests */
         Nob_Cmd cmd = {0};
         nob_cmd_append(&cmd,
                 COMPILER,
