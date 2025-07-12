@@ -1,4 +1,4 @@
-#include "BitStream.hpp"
+#include <BitStream.hpp>
 
 BitStream::BitStream(std::size_t n /* = 1 */)
 {
