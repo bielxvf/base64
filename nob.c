@@ -2,15 +2,16 @@
 
 #include "nob.h"
 
-#define BUILD_FOLDER "build/"
-#define SRC_FOLDER   "src/"
+#define BUILD_DIR "build/"
+#define CORE_DIR  "src/core/"
+#define UTIL_DIR  "src/util/"
 
 #define PROJECT_NAME "base64"
 
 #define STD_VERSION "-std=c++23"
 #define WARNINGS    "-Wall", "-Wextra"
 
-#define DEPS "BitStream.o"
+#define LINKER_DEPS "BitStream.o"
 
 #define INCLUDE_DIRS "./lib/cxxopts/"
 
@@ -18,16 +19,16 @@ int main(int argc, char **argv)
 {
     NOB_GO_REBUILD_URSELF(argc, argv);
 
-    if (!nob_mkdir_if_not_exists(BUILD_FOLDER)) return 1;
+    if (!nob_mkdir_if_not_exists(BUILD_DIR)) return 1;
 
     Nob_Cmd cmd = {0};
     nob_cmd_append(&cmd,
         "c++", 
         STD_VERSION,
         WARNINGS, 
-        "-o", BUILD_FOLDER "BitStream.o", 
+        "-o", BUILD_DIR "BitStream.o", 
         "-c",
-        SRC_FOLDER"BitStream.cpp");
+        UTIL_DIR "BitStream.cpp");
 
     if (!nob_cmd_run_sync(cmd)) return 1;
 
@@ -36,10 +37,11 @@ int main(int argc, char **argv)
         "c++", 
         STD_VERSION,
         WARNINGS, 
-        "-o", BUILD_FOLDER PROJECT_NAME, 
-        BUILD_FOLDER DEPS,
-        "-I"INCLUDE_DIRS,
-        SRC_FOLDER"main.cpp");
+        "-I" INCLUDE_DIRS,
+        "-I" UTIL_DIR,
+        "-o", BUILD_DIR PROJECT_NAME, 
+        BUILD_DIR LINKER_DEPS,
+        CORE_DIR "main.cpp");
 
     if (!nob_cmd_run_sync(cmd)) return 1;
 }
