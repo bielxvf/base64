@@ -19,8 +19,8 @@ int main(int argc, char** argv)
     options.add_options()
         ("d,decode", "Decode instead of encode")
         ("o,output", "Output file", cxxopts::value<std::string>())
+        ("i,input", "Input file", cxxopts::value<std::string>())
         ("h,help", "Print help");
-    /* TODO: Input flag, generalise the stream aswell like output */
 
     auto result = options.parse(argc, argv);
     bool decode = result.count("decode") > 0;
@@ -39,6 +39,18 @@ int main(int argc, char** argv)
         out = &fout;
     }
 
+    std::string input_file;
+    std::istream* in = &std::cin;
+    std::ifstream fin;
+    if (result.count("input")) {
+        input_file = result["input"].as<std::string>();
+        fin.open(input_file);
+        if (!fin) {
+            std::cerr << "Error: Failed to open input file" << '\n';
+            return 1;
+        }
+    }
+
     if (result.count("help")) {
         *out << options.help() << '\n';
         return 0;
@@ -51,7 +63,7 @@ int main(int argc, char** argv)
         }
 
         BitStream bs;
-        for (char ch; std::cin.get(ch);) {
+        for (char ch; in->get(ch);) {
             if (ch != '=') {
                 for (std::size_t i = 0; i < 6; i++) {
                     bs.append_bit((decode_map[ch] >> (5 - i)) & 1);
@@ -66,7 +78,7 @@ int main(int argc, char** argv)
 
     } else {
         BitStream bs;
-        for (char ch; std::cin.get(ch);) {
+        for (char ch; in->get(ch);) {
             bs.append_byte(ch);
         }
 
