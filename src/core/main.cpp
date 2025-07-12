@@ -12,9 +12,6 @@ const char alphabet[64] = {
     '+', '/'
 };
 
-bool decode = false;
-std::string output_file;
-
 int main(int argc, char** argv)
 {
     BitStream bs;
@@ -23,6 +20,7 @@ int main(int argc, char** argv)
     while (std::cin.get(ch)) {
         bs.append_byte(ch);
     }
+
     /* pad the input bytes to a multiple of 3, and remember how many actual bytes there were */
     std::size_t original_size = bs.size() / 8;
     for (std::size_t i = 0; i < (bs.size() / 8) % 3; i++) {
