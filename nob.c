@@ -12,6 +12,8 @@
 
 #define DEPS "BitStream.o"
 
+#define INCLUDE_DIRS "./lib/cxxopts/"
+
 int main(int argc, char **argv)
 {
     NOB_GO_REBUILD_URSELF(argc, argv);
@@ -36,6 +38,7 @@ int main(int argc, char **argv)
         WARNINGS, 
         "-o", BUILD_FOLDER PROJECT_NAME, 
         BUILD_FOLDER DEPS,
+        "-I"INCLUDE_DIRS,
         SRC_FOLDER"main.cpp");
 
     if (!nob_cmd_run_sync(cmd)) return 1;
